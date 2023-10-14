@@ -10,7 +10,9 @@ import { Toaster, toast } from "sonner";
 
 export default function Home() {
   const [colors, setColors] = useState<string[]>([]);
+  const [backupColors, setBackupColors] = useState<string[]>([]);
   const [image, setImage] = useState<string | null>(null);
+  const [backupImage, setBackupImage] = useState<string | null>(null);
 
   const handleImageUpload = async (fileList: FileList | null) => {
     if (fileList === null || !fileList.length) return;
@@ -21,17 +23,20 @@ export default function Home() {
 
     if (colors.length) setColors([]);
 
+    const newBackupColors = [];
     for (const key of keys) {
-      if (palette[key] === undefined) {
-        delete palette[key];
+      if (palette[key] !== undefined) {
+        const color = palette[key];
+
+        setColors((prev) => [...prev, color ?? ""]);
+        newBackupColors.push(color ?? "");
       }
-
-      const color = palette[key];
-
-      setColors((prev) => [...prev, color ?? ""]);
     }
 
+    setBackupColors(newBackupColors);
+
     setImage(URL.createObjectURL(fileList[0]));
+    setBackupImage(URL.createObjectURL(fileList[0]));
 
     toast("Image and colors are loaded!");
   };
@@ -45,8 +50,27 @@ export default function Home() {
   };
 
   const handleReset = () => {
+    toast("Palette reseted!", {
+      action: {
+        label: "Undo",
+        onClick: undoReset,
+      },
+    });
+
     setImage("");
     setColors([]);
+  };
+
+  const undoReset = () => {
+    setImage(backupImage);
+    setColors(backupColors);
+
+    toast.success("Palette restored! Now you can chill");
+  };
+
+  const copyToClipboard = (color: string) => {
+    navigator.clipboard.writeText(color);
+    toast(`Color ${color} copied to clipboard!`);
   };
 
   return (
@@ -55,7 +79,7 @@ export default function Home() {
         <h1>image-2-colors</h1>
 
         <div className="gap-x-4 flex items-center">
-          <a href="https://github.com/igorfelipeduca/image-to-colors">
+          <a href="https://github.com/igorfelipeduca/image-2-colors">
             <LucideGithub />
           </a>
 
@@ -101,7 +125,7 @@ export default function Home() {
             <>
               <NextImage
                 src={image}
-                className="h-64 w-full rounded-lg cursor-pointer transitin-all ease-linear duration-150 object-cover"
+                className="h-full w-96 lg:w-full lg:max-w-3xl rounded-lg cursor-pointer transitin-all ease-linear duration-150 object-cover"
                 isBlurred
                 onClick={handleClickImage}
               />
@@ -159,14 +183,17 @@ export default function Home() {
         <div className="mt-8 lg:flex lg:justify-center">
           <div className="grid grid-cols-3 lg:grid-cols-4 gap-4">
             {colors.map((color, index) => (
-              <div
-                className="rounded-lg h-28 w-28"
-                style={{
-                  backgroundColor: color,
-                }}
-                key={index}
-                onClick={() => toast("My first toast")}
-              />
+              <div className="flex flex-col items-center gap-y-2" key={index}>
+                <div
+                  className="rounded-lg h-20 w-20 lg:h-28 lg:w-28 cursor-pointer transition-all ease-linear duration-150 hover:opacity-75"
+                  style={{
+                    backgroundColor: color,
+                  }}
+                  onClick={() => copyToClipboard(color)}
+                />
+
+                <span className="text-zinc-600">{color}</span>
+              </div>
             ))}
           </div>
         </div>
