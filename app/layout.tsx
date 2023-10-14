@@ -20,6 +20,7 @@ export const metadata: Metadata = {
     url: "https://image-2-colors.vercel.app",
     title: "image-2-colors - easily extract colors from an image",
     type: "website",
+    images: ["/snap.png"],
   },
 };
 
