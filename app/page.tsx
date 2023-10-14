@@ -199,7 +199,10 @@ export default function Home() {
         </div>
       </main>
 
-      <div className="mt-8 bg-zinc-50 border-t border-zinc-300 py-4 px-8 flex gap-x-2 items-center">
+      <a
+        href="https://twitter.com/ducaswtf"
+        className="mt-8 bg-zinc-50 border-t border-zinc-300 py-4 px-8 flex gap-x-2 items-center"
+      >
         <NextImage
           src={"https://i.ibb.co/Bwzr3t2/duca.jpg"}
           alt="ducaswtf"
@@ -218,7 +221,7 @@ export default function Home() {
           </a>
           .
         </span>
-      </div>
+      </a>
 
       <div className="z-50">
         <Toaster />
