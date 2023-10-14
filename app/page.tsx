@@ -101,7 +101,7 @@ export default function Home() {
             <>
               <NextImage
                 src={image}
-                className="h-64 w-full rounded-lg cursor-pointer transitin-all ease-linear duration-150"
+                className="h-64 w-full rounded-lg cursor-pointer transitin-all ease-linear duration-150 object-cover"
                 isBlurred
                 onClick={handleClickImage}
               />
