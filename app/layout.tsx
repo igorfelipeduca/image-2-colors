@@ -10,14 +10,14 @@ export const metadata: Metadata = {
   description: "easily extract colors from an image",
   twitter: {
     card: "summary_large_image",
-    site: "https://image2colors.vercel.app",
+    site: "https://image-2-colors.vercel.app",
     creator: "@ducaswtf",
     title: "image-2-colors - easily extract colors from an image",
     images: ["/snap.png"],
   },
   openGraph: {
     locale: "pt_BR",
-    url: "https://image2colors.vercel.app",
+    url: "https://image-2-colors.vercel.app",
     title: "image-2-colors - easily extract colors from an image",
     type: "website",
   },
