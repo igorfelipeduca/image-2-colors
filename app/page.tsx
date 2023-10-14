@@ -1,113 +1,201 @@
-import Image from 'next/image'
+"use client";
+
+import { LucideGithub, RewindIcon, RotateCcw } from "lucide-react";
+import Image from "next/image";
+import { Button, Image as NextImage } from "@nextui-org/react";
+import { getPalette } from "react-palette";
+import Sig from "./assets/sig.svg";
+import { useState } from "react";
+import { Toaster, toast } from "sonner";
 
 export default function Home() {
+  const [colors, setColors] = useState<string[]>([]);
+  const [image, setImage] = useState<string | null>(null);
+
+  const handleImageUpload = async (fileList: FileList | null) => {
+    if (fileList === null || !fileList.length) return;
+
+    const palette = await getPalette(URL.createObjectURL(fileList[0]));
+
+    const keys = Object.keys(palette);
+
+    if (colors.length) setColors([]);
+
+    for (const key of keys) {
+      if (palette[key] === undefined) {
+        delete palette[key];
+      }
+
+      const color = palette[key];
+
+      setColors((prev) => [...prev, color ?? ""]);
+    }
+
+    setImage(URL.createObjectURL(fileList[0]));
+
+    toast("Image and colors are loaded!");
+  };
+
+  const handleClickImage = () => {
+    const fileInput = document.getElementById("dropzone-file");
+
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
+  const handleReset = () => {
+    setImage("");
+    setColors([]);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
+    <>
+      <div className="py-4 px-8 border-b border-zinc-200 flex justify-between items-center">
+        <h1>image-2-colors</h1>
+
+        <div className="gap-x-4 flex items-center">
+          <a href="https://github.com/igorfelipeduca/image-to-colors">
+            <LucideGithub />
+          </a>
+
+          <a href="https://biome.sigcoding.com">
+            <Image className="h-7 w-7 invert" alt="Sig" src={Sig} />
           </a>
         </div>
       </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+      <main
+        className={`${
+          image && colors.length ? "pt-8" : "pt-[7.5rem] lg:pt-32"
+        } pb-16 lg:pb-[10.5rem] px-8`}
+      >
+        {image && colors.length ? (
+          <div className="flex justify-end pb-8">
+            <Button
+              className="rounded-lg bg-black text-white"
+              onClick={handleReset}
+            >
+              Reset palette <RotateCcw className="h-4 w-4" />
+            </Button>
+          </div>
+        ) : (
+          <></>
+        )}
+
+        <div className="flex justify-center">
+          <h1 className="text-3xl text-black font-bold">
+            image-<span style={{ color: colors[0] }}>2</span>-colors
+          </h1>
+        </div>
+
+        <div className="mt-4 text-center">
+          <h3 className="text-zinc-700">
+            this app will easily help you to collect colors from images and use
+            them to develop your websites.
+          </h3>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          {image ? (
+            <>
+              <NextImage
+                src={image}
+                className="h-64 w-full rounded-lg cursor-pointer transitin-all ease-linear duration-150"
+                isBlurred
+                onClick={handleClickImage}
+              />
+
+              <input
+                id="dropzone-file"
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e.target.files)}
+              />
+            </>
+          ) : (
+            <div className="flex items-center justify-center w-full lg:max-w-3xl">
+              <label
+                htmlFor="dropzone-file"
+                className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+              >
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <svg
+                    className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 16"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                    />
+                  </svg>
+                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                    <span className="font-semibold">Click to upload</span> or
+                    drag and drop
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    SVG, PNG, JPG or GIF (MAX. 800x400px)
+                  </p>
+                </div>
+                <input
+                  id="dropzone-file"
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e.target.files)}
+                />
+              </label>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-8 lg:flex lg:justify-center">
+          <div className="grid grid-cols-3 lg:grid-cols-4 gap-4">
+            {colors.map((color, index) => (
+              <div
+                className="rounded-lg h-28 w-28"
+                style={{
+                  backgroundColor: color,
+                }}
+                key={index}
+                onClick={() => toast("My first toast")}
+              />
+            ))}
+          </div>
+        </div>
+      </main>
+
+      <div className="mt-8 bg-zinc-50 border-t border-zinc-300 py-4 px-8 flex gap-x-2 items-center">
+        <NextImage
+          src={"https://i.ibb.co/Bwzr3t2/duca.jpg"}
+          alt="ducaswtf"
+          isBlurred
+          className="h-10 w-10 rounded-full"
         />
+
+        <span className="text-zinc-700">
+          made by{" "}
+          <a
+            href="https://twitter.com/ducaswtf"
+            className="text-transparent bg-clip-text bg-gradient-to-br from-zinc-700 to-zinc-950 font-medium"
+            style={{ color: colors[0] }}
+          >
+            Duca
+          </a>
+          .
+        </span>
       </div>
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div className="z-50">
+        <Toaster />
       </div>
-    </main>
-  )
+    </>
+  );
 }
