@@ -7,8 +7,20 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "image-2-colors",
-  description:
-    "an open-source app that convert an image to a color palette made by @ducaswtf on twitter",
+  description: "easily extract colors from an image",
+  twitter: {
+    card: "summary_large_image",
+    site: "https://image-2-colors.vercel.app",
+    creator: "@ducaswtf",
+    title: "image-2-colors - easily extract colors from an image",
+    images: ["/snap.png"],
+  },
+  openGraph: {
+    locale: "pt_BR",
+    url: "https://image-2-colors.vercel.app",
+    title: "image-2-colors - easily extract colors from an image",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
